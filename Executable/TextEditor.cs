@@ -58,6 +58,7 @@ namespace HouseOfFun.Executable
 
         private void Run()
         {
+            
             shouldExit = false;
             while (!shouldExit)
             {

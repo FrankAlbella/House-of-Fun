@@ -15,6 +15,7 @@ namespace HouseOfFun.Tools
             characterList = new List<List<char>>();
             characterList.Capacity = 1;
             characterList.Add(new List<char>());
+
         }
 
         /// <summary>Used to write an item to the character list and print it to the screen</summary>
@@ -23,44 +24,48 @@ namespace HouseOfFun.Tools
         /// <param name="y">Y coordinate of the cursor</param>
         public void Write(char c, int x, int y)
         {
-            if (x >= Console.WindowWidth - 1)
+            characterList.ElementAt(y - 1).Insert(x - 1, c);
+            if (characterList.ElementAt(y - 1).Count > Console.BufferWidth - 2)
             {
-                Console.SetCursorPosition(1, y + 1);
-                y += 1;
-                x = 1;
-            }
-            if (characterList.Capacity < y)
-            {
-                characterList.Capacity += 1;
-                characterList.Add(new List<char>());
-            }
-            if (characterList.ElementAt(y - 1).Count < Console.BufferWidth - 2)
-                characterList.ElementAt(y - 1).Insert(x - 1, c);
-            else
-            {
-                try { characterList.ElementAt(y).Insert(0, c); }
-                catch(ArgumentOutOfRangeException)
+                if (characterList.Last().Count >= Console.BufferWidth - 2)
                 {
                     characterList.Capacity += 1;
                     characterList.Add(new List<char>());
-                    characterList.ElementAt(y).Insert(0, c);
-                }
-                
-            }
 
-            int j = 0;
-            foreach (var list in characterList)
-            {
-                Console.SetCursorPosition(1, j + 1);
-                foreach (char ch in characterList.ElementAt(j))
+                    if (characterList.Count >= Console.BufferHeight)
+                        Console.SetBufferSize(GameCore.windowWidth, Console.BufferHeight + 1);
+                }
+                for (int elementY = y; elementY < characterList.Count; elementY++)
                 {
-                    Console.Write(ch);
+                    characterList.ElementAt(y).Insert(0, characterList.ElementAt(y - 1).Last());
+                    characterList.ElementAt(y - 1).RemoveAt(characterList.ElementAt(y - 1).Count - 1);
                 }
-                j++;
-                Console.Write(new string(' ', Console.BufferWidth));
             }
+            
+            Update(x, y);
 
-            Console.SetCursorPosition(x + 1, y);
+            if (x < Console.BufferWidth - 1)
+                Console.SetCursorPosition(x + 1, y);
+            else
+                Console.SetCursorPosition(2, y + 1);
+        }
+
+        /// <summary>Updates all the characters after the cursor on the console window</summary>
+        /// <param name="x">X coordinate of the cursor</param>
+        /// <param name="y">Y coordinate of the cursor</param>
+        private void Update(int x, int y)
+        {
+            for (int elementY = y - 1; elementY < characterList.Count; elementY++)
+            {
+                for (int elementX = x - 1; elementX < characterList.ElementAt(elementY).Count; elementX++)
+                {
+                    Console.Write(characterList.ElementAt(elementY).ElementAt(elementX));
+                }
+                x = 1;
+                if (elementY + 1 != characterList.Count)
+                    Console.SetCursorPosition(1, y + 1);
+            }
+            Console.SetCursorPosition(x, y);
         }
 
         /// <summary>Used to remove an item from the character list and remove it from the screen</summary>
@@ -131,7 +136,8 @@ namespace HouseOfFun.Tools
             characterList.Capacity += 1;
             characterList.Add(new List<char>());
 
-            
+            if (y + 1 >= Console.BufferHeight)
+                Console.SetBufferSize(Console.BufferWidth, Console.BufferHeight + 1);
 
             for (int i = characterList.Count - 1; i > y; i--)
             {
@@ -166,6 +172,7 @@ namespace HouseOfFun.Tools
             }
 
             Console.SetCursorPosition(1, y + 1);
+
         }
     }
 }

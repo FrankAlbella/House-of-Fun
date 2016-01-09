@@ -16,6 +16,9 @@ namespace HouseOfFun
         public static int CursorX { get; set; }
         public static int CursorY { get; set; }
 
+        public static short windowHeight = 25;
+        public static short windowWidth = 80;
+
         public static MenuItem<TicTacCore> ticTacToeMenu;
         static MenuItem<TextEditor> textEditorMenu;
         static MenuItem<GenericClass> exampleMenuItem2;
@@ -34,6 +37,8 @@ namespace HouseOfFun
         static void Main(string[] args)
         {
 #if DEBUG
+            Console.SetBufferSize(windowWidth, windowHeight);
+            Console.SetWindowSize(windowWidth, windowHeight);
             TextEditor textEditor = new TextEditor();
             textEditor.Execute();
 #endif
@@ -69,6 +74,10 @@ namespace HouseOfFun
             DirectoryInfo di = Directory.CreateDirectory(directoryPath);
 
             Console.CursorVisible = false;
+
+            Console.SetBufferSize(windowWidth, windowHeight);
+            Console.SetWindowSize(windowWidth, windowHeight);
+
             DrawTitle();
             //Initalize all menu items
             ticTacToeMenu = new MenuItem<TicTacCore>("Tic Tac Toe", 0, 5);
